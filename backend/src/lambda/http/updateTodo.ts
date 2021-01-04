@@ -16,7 +16,9 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   // TODO: (done) Update a TODO item with the provided id using values in the "updatedTodo" object
   logger.info(`Processing event: ${JSON.stringify(event)}`)
 
-  await updateTodo(todoId, updatedTodo)
+  const userId = event.requestContext.authorizer.principalId
+
+  await updateTodo(todoId, userId, updatedTodo)
 
   return {
     statusCode: 200,

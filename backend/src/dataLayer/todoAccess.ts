@@ -16,8 +16,7 @@ export class TodoAccess {
 
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly todosTable = process.env.TODOS_TABLE,
-    private readonly userIdIndex = process.env.USER_ID_INDEX) {
+    private readonly todosTable = process.env.TODOS_TABLE) {
   }
 
   async getAllTodosForUser(userId: string): Promise<TodoItem[]> {
@@ -25,7 +24,6 @@ export class TodoAccess {
 
     const result = await this.docClient.query({
       TableName: this.todosTable,
-      IndexName: this.userIdIndex,
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId
@@ -48,22 +46,24 @@ export class TodoAccess {
     return newTodo
   }
 
-  async deleteTodo(todoId: string): Promise<void> {
+  async deleteTodo(todoId: string, userId: string): Promise<void> {
     await this.docClient.delete({
       TableName: this.todosTable,
       Key: {
-        todoId
+        todoId,
+        userId
       }
     }).promise()
 
     logger.info(`Deleted todo item: ${JSON.stringify(todoId)}`)
   }
 
-  async updateTodo(todoId: string, todoUpdate: TodoUpdate): Promise<void> {
+  async updateTodo(todoId: string, userId: string, todoUpdate: TodoUpdate): Promise<void> {
     await this.docClient.update({
       TableName: this.todosTable,
       Key: {
-        todoId
+        todoId,
+        userId
       },
       UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done',
       ExpressionAttributeNames: {
@@ -79,11 +79,12 @@ export class TodoAccess {
     logger.info(`Updated todo item: ${JSON.stringify(todoId)}`)
   }
 
-  async updateAttachementUrl(todoId: string, attachmentUrl: string): Promise<void> {
+  async updateAttachementUrl(todoId: string, userId: string, attachmentUrl: string): Promise<void> {
     await this.docClient.update({
       TableName: this.todosTable,
       Key: {
-        todoId
+        todoId,
+        userId
       },
       UpdateExpression: 'set attachmentUrl = :attachmentUrl',
       ExpressionAttributeValues: {

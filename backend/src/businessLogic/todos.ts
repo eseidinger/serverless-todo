@@ -24,19 +24,19 @@ export async function createTodo(
   return await todoAccess.createTodo(newTodo)
 }
 
-export async function deleteTodo(todoId: string): Promise<void> {
-  return await todoAccess.deleteTodo(todoId)
+export async function deleteTodo(todoId: string, userId: string): Promise<void> {
+  return await todoAccess.deleteTodo(todoId, userId)
 }
 
-export async function updateTodo(todoId: string, todoUpdate: TodoUpdate): Promise<void> {
-  return await todoAccess.updateTodo(todoId, todoUpdate)
+export async function updateTodo(todoId: string, userId: string, todoUpdate: TodoUpdate): Promise<void> {
+  return await todoAccess.updateTodo(todoId, userId, todoUpdate)
 }
 
-export async function getUploadUrl(todoId: string): Promise<string> {
-  const attachmentUrl = getAttachementUrl(todoId)
-  const uploadUrl = getUploadUrlS3(todoId)
+export async function getUploadUrl(todoId: string, userId: string): Promise<string> {
+  const attachmentUrl = await getAttachementUrl(todoId)
+  const uploadUrl = await getUploadUrlS3(todoId)
 
-  await todoAccess.updateAttachementUrl(todoId, attachmentUrl)
+  await todoAccess.updateAttachementUrl(todoId, userId, attachmentUrl)
 
   return uploadUrl
 }

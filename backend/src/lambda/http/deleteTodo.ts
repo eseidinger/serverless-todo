@@ -13,7 +13,9 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   // TODO: (done) Remove a TODO item by id
   logger.info(`Processing event: ${JSON.stringify(event)}`)
 
-  await deleteTodo(todoId)
+  const userId = event.requestContext.authorizer.principalId
+
+  await deleteTodo(todoId, userId)
 
   return {
     statusCode: 204,
